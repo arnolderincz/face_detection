@@ -4,7 +4,13 @@ import Navigation from './components/navigation/Navigation';
 import Logo from './components/Logo/Logo';
 import ImageLinkForm from './components/ImgLink/ImageLinkForm';
 import Rank from './components/Rank/Rank';
+import FaceRecognition from './components/FaceRecognition/FaceRecognition';
 import Particles from 'react-particles-js';
+import Clarifai from 'clarifai';
+
+const app = new Clarifai.App({
+  apiKey: 'b7c71470c62f4a82be638ae9dc924ced'
+ });
 
 const particle_params = {
   particles: {
@@ -35,6 +41,50 @@ const particle_params = {
 }
 
 class App extends Component{
+  constructor(){
+    super();
+    this.state = {
+      input: '',
+      imgUrl:'',
+      box:{}
+    }
+  }
+
+  faceLocation = (data) =>{
+    const faceData = data.outputs[0].data.regions[0].region_info.bounding_box;
+    
+    const image = document.getElementById('inputImg');
+    const width = Number(image.width);
+    const height= Number(image.height);
+    return{
+      leftCol: faceData.left_col * width,
+      topRow: faceData.top_row * height,
+      bottomRow: height - (faceData.bottom_row * height),
+      rightCol: width - (faceData.right_col * width)
+    }
+  }
+
+  displayFaceBox = (box) =>{
+    this.setState({box:box})
+  }
+
+  onInputChange = (event) =>{
+    this.setState({input: event.target.value});
+  }
+
+  onBtnSubmit =() =>{
+    this.setState({imgUrl:this.state.input});
+
+    app.models.predict(Clarifai.FACE_DETECT_MODEL, 
+    this.state.input)
+    .then(response =>{
+      this.displayFaceBox(this.faceLocation(response));
+    })
+    .catch(err =>{
+      console.log(err);
+    })
+  }
+
   render(){
     return(
       <div className="App">
@@ -43,9 +93,9 @@ class App extends Component{
         <Logo/>
         <Rank/>
 
-        <ImageLinkForm/>
+        <ImageLinkForm onInputChange={this.onInputChange} onBtnSubmit={this.onBtnSubmit}/>
         
-       {/*<FaceRecognition/>*/}
+       <FaceRecognition box={this.state.box} imgUrl={this.state.imgUrl}/>
         
       </div>
     )
