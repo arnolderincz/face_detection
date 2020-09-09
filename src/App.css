@@ -18,3 +18,8 @@
   z-index: -1;
 }
 
+.inLine{
+  display: flex;
+  justify-content: space-between;
+}
+
