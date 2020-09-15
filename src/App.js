@@ -104,6 +104,20 @@ class App extends Component{
     app.models.predict(Clarifai.FACE_DETECT_MODEL, 
     this.state.input)
     .then(response =>{
+      if(response){
+        fetch('http://localhost:3001/image',{
+          method:'put',
+          headers:{'Content-Type' : 'application/json'},
+          body: JSON.stringify({
+            id: this.state.user.id
+          })
+        })
+        .then(response => response.json())
+        .then(count =>{
+          this.setState(Object.assign(this.state.user, {entries: count}))
+        })
+      }
+      console.log(this.state.user.name)
       this.displayFaceBox(this.faceLocation(response));
     })
     .catch(err =>{
@@ -124,7 +138,9 @@ class App extends Component{
         ?
           <div>
             <Logo/>
-            <SignIn onRouteChange={this.onRouteChange}/>
+            <SignIn 
+              loadUser={this.loadUser}
+              onRouteChange={this.onRouteChange}/>
           </div>
         : (this.state.route === 'home'
           ?
@@ -133,7 +149,8 @@ class App extends Component{
               <Logo/>
               <Navigation onRouteChange={this.onRouteChange}/>
             </div>
-            <Rank/>
+            <Rank name={this.state.user.name} 
+            entries={this.state.user.entries}/>
             <ImageLinkForm onInputChange={this.onInputChange} onBtnSubmit={this.onBtnSubmit}/>          
             <FaceRecognition box={this.state.box} imgUrl={this.state.imgUrl}/>
           </div>
