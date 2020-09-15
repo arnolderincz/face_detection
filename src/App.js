@@ -9,10 +9,15 @@ import SignIn from './components/SignIn/SignIn';
 import Register from './components/Register/Register';
 import Particles from 'react-particles-js';
 import Clarifai from 'clarifai';
+import Home from './components/Home/Home';
+
+
 
 const app = new Clarifai.App({
   apiKey: 'b7c71470c62f4a82be638ae9dc924ced'
  });
+
+
 
 const particle_params = {
   particles: {
@@ -49,8 +54,26 @@ class App extends Component{
       input: '',
       imgUrl:'',
       box:{},
-      route: 'signIn'
+      route: 'signIn',
+      isSignedIn: false,
+      user:{
+        id: '',
+        name: '',
+        email:'',
+        entries: 0,
+        joined: ''
+      }
     }
+  }
+
+  loadUser = (data) =>{
+    this.setState({user:{
+      id: data.id,
+      name: data.name,
+      email: data.email,
+      entries: data.entries,
+      joined: data.joined
+    }})
   }
 
   faceLocation = (data) =>{
@@ -116,8 +139,13 @@ class App extends Component{
           </div>
           :
           <div>
-            <Logo/>
-            <Register onRouteChange={this.onRouteChange}/>
+            <div className='inLine'>
+              <Logo/>
+              <Home onRouteChange={this.onRouteChange}/>
+            </div>
+            <Register 
+            loadUser = {this.loadUser}
+            onRouteChange={this.onRouteChange}/>
           </div>
         )}    
       </div>
