@@ -53,7 +53,7 @@ class App extends Component{
     this.state = {
       input: '',
       imgUrl:'',
-      box:{},
+      box:[],
       route: 'signIn',
       isSignedIn: false,
       user:{
@@ -77,17 +77,19 @@ class App extends Component{
   }
 
   faceLocation = (data) =>{
-    const faceData = data.outputs[0].data.regions[0].region_info.bounding_box;
-    
-    const image = document.getElementById('inputImg');
-    const width = Number(image.width);
-    const height= Number(image.height);
-    return{
-      leftCol: faceData.left_col * width,
-      topRow: faceData.top_row * height,
-      bottomRow: height - (faceData.bottom_row * height),
-      rightCol: width - (faceData.right_col * width)
-    }
+    let regions = [];
+    data.outputs[0].data.regions.forEach( region =>{ 
+      let faceData = region.region_info.bounding_box;
+      let image = document.getElementById('inputImg');
+      let width = Number(image.width);
+      let height= Number(image.height);
+      regions.push({
+        leftCol: faceData.left_col * width,
+        topRow: faceData.top_row * height,
+        bottomRow: height - (faceData.bottom_row * height),
+        rightCol: width - (faceData.right_col * width)})
+    })
+    return regions;
   }
 
   displayFaceBox = (box) =>{
@@ -100,7 +102,6 @@ class App extends Component{
 
   onBtnSubmit =() =>{
     this.setState({imgUrl:this.state.input});
-
     app.models.predict(Clarifai.FACE_DETECT_MODEL, 
     this.state.input)
     .then(response =>{
@@ -117,7 +118,6 @@ class App extends Component{
           this.setState(Object.assign(this.state.user, {entries: count}))
         })
       }
-      console.log(this.state.user.name)
       this.displayFaceBox(this.faceLocation(response));
     })
     .catch(err =>{
@@ -126,7 +126,7 @@ class App extends Component{
   }
 
   onRouteChange = (route) =>{
-    this.setState({route: route});
+    this.setState({route: route, imgUrl: ''});
   }
 
   render(){
