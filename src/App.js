@@ -55,7 +55,7 @@ class App extends Component{
       imgUrl:'',
       box:[],
       route: 'signIn',
-      isSignedIn: false,
+      signInErr: false,
       user:{
         id: '',
         name: '',
@@ -142,7 +142,7 @@ class App extends Component{
               loadUser={this.loadUser}
               onRouteChange={this.onRouteChange}/>
           </div>
-        : (this.state.route === 'home'
+        : (this.state.route === 'home')
           ?
           <div>
             <div className='inLine'>
@@ -164,7 +164,7 @@ class App extends Component{
             loadUser = {this.loadUser}
             onRouteChange={this.onRouteChange}/>
           </div>
-        )}    
+        }    
       </div>
     )
   }
