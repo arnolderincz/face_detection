@@ -7,7 +7,8 @@ class Register extends React.Component {
         this.state = {
             name:'',
             email:'',
-            pass:''
+            pass:'',
+            isEmpty:false
         }
     }
 
@@ -24,6 +25,11 @@ class Register extends React.Component {
     }
 
     onRegister = () => {
+        const {name, email, pass} = this.state;
+        if(name.length === 0 || email.length === 0 || pass.length === 0){
+            this.setState({isEmpty: true});
+            return;
+        }
         fetch('http://localhost:3001/register',{
             method: 'post',
             headers: {'Content-Type': 'application/json'},
@@ -34,6 +40,7 @@ class Register extends React.Component {
             })
         }).then(response => response.json())
         .then(user =>{
+            console.log(user)
             this.props.loadUser(user);
             this.props.onRouteChange('home');
         })  
@@ -61,6 +68,13 @@ class Register extends React.Component {
                                 <input onChange={this.onPassChange} className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100" type="password" name="password"  id="password" />
                             </div>
                         </fieldset>
+                        {(this.state.isEmpty)
+                            ?  <div>
+                                    <p className="dark-red">All fields are required</p>
+                                </div>
+                            :
+                            <div></div>
+                        }
                         <div className="">
                             <input onClick={this.onRegister} className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 dib" type="submit" value="Register" />
                         </div>
