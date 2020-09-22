@@ -47,23 +47,25 @@ const particle_params = {
   }
 }
 
+const initial_state= {
+  input: '',
+  imgUrl:'',
+  box:[],
+  route: 'signedOut',
+  signInErr: false,
+  user:{
+    id: '',
+    name: '',
+    email:'',
+    entries: 0,
+    joined: ''
+  }
+};
+
 class App extends Component{
   constructor(){
     super();
-    this.state = {
-      input: '',
-      imgUrl:'',
-      box:[],
-      route: 'signIn',
-      signInErr: false,
-      user:{
-        id: '',
-        name: '',
-        email:'',
-        entries: 0,
-        joined: ''
-      }
-    }
+    this.state = initial_state;
   }
 
   loadUser = (data) =>{
@@ -126,6 +128,9 @@ class App extends Component{
   }
 
   onRouteChange = (route) =>{
+    if(route === 'signedOut'){
+      this.setState(initial_state);
+    }
     this.setState({route: route, imgUrl: ''});
   }
 
@@ -134,7 +139,7 @@ class App extends Component{
       <div className="App">
         <Particles className="particles"  params={particle_params}/>
         
-        {(this.state.route === 'signIn') 
+        {(this.state.route === 'signedOut') 
         ?
           <div>
             <Logo/>

@@ -24,16 +24,20 @@ class SignIn extends React.Component {
            headers:{'Content-Type':'application/json'},
            body: JSON.stringify({
                email: this.state.signInEmail,
-               password: this.state.signInPass
+               pass: this.state.signInPass
            })
        }).then(response => response.json())
        .then(data =>{
-           if(data !== "Can't find user"){
+           if(data !== "Wrong credentials" && data !== "unable to get user"){
                 this.props.loadUser(data);
                 this.props.onRouteChange('home');
            }
-           else if(data === "Can't find user"){
+           else if(data === "Wrong credentials"){
                this.setState({signInErr: true})
+           }
+           else{
+            this.setState({signInErr: true});
+            console.log("Something went wrong in the database...")
            }
        })  
     }
